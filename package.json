@@ -1,0 +1,13 @@
+{
+  "name": "3dmine",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Dependency-free 3D Minesweeper with tetrahedral and cubic boards, translucent clue shells and hover hints.",
+  "license": "MIT",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node server.cjs",
+    "test": "node test-core.cjs",
+    "check": "node --check app.js && node --check core.js && node --check server.cjs && node --check test-core.cjs"
+  }
+}

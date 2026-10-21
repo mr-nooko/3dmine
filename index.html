@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>立方雷场 · 3D 扫雷实验</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header><a class="brand" href="./"><span class="brand-mark">◇</span> 立方雷场 <span class="tag">EXPERIMENT 001</span></a><span class="header-note">一个关于空间与推理的实验</span><button id="help" class="quiet">操作说明 ↗</button></header>
+  <main>
+    <aside>
+      <div class="eyebrow">VOLUMETRIC MINESWEEPER</div>
+      <h1>换个角度，<br>寻找答案。</h1>
+      <p class="intro">每一个单元，都是一格未知。<br>旋转雷场，读懂数字背后的空间关系。</p>
+      <div class="stats"><div><span>剩余标记</span><strong id="remaining">—</strong></div><div><span>已探索</span><strong id="progress">0<span>%</span></strong></div><div><span>用时</span><strong id="timer">00:00</strong></div></div>
+      <label class="field">棋盘形状<select id="shape"><option value="tetra" selected>三棱锥 · 共面 4 邻域</option><option value="cube">立方体 · 接触 26 邻域</option></select></label>
+      <p class="fine" id="shapeHint">小三棱锥组成大三棱锥 · 仅共面相邻 · 最多 4 邻居</p>
+      <label class="field">游戏模式<select id="mode"><option value="surface" selected>表面消除 · 从外向内</option><option value="free">自由探索 · 允许内部操作</option></select></label>
+      <section><div class="section-title">01 <span>雷场设置</span></div><label class="field">棋盘尺寸<select id="size"><option value="3">3 × 3 × 3 · 27 格</option><option value="4" selected>4 × 4 × 4 · 64 格</option><option value="5">5 × 5 × 5 · 125 格</option><option value="6">6 × 6 × 6 · 216 格</option><option value="7">7 × 7 × 7 · 343 格</option></select></label><label class="field">雷密度 <span id="densityValue">12%</span><input id="density" type="range" min="5" max="25" value="12"></label><button id="restart" class="primary">生成新雷场 <span>↻</span></button><div class="fine">随机布雷 · 首击安全 · 不保证无猜</div></section>
+      <section><div class="section-title">02 <span>观察工具</span></div><label class="toggle"><span>邻域透视<small>辅助观察，不会解锁内部消除</small></span><input type="checkbox" id="xray"></label><div id="sliceOption" hidden><label class="toggle"><span>切层查看<small>自由探索模式下，可直接选择内部</small></span><input type="checkbox" id="slice"></label></div><div id="sliceTools" hidden><div class="layer-controls"><select id="axis" aria-label="切层轴"><option value="z">Z 轴</option><option value="y">Y 轴</option><option value="x">X 轴</option></select><span id="layerValue">第 1 / 4 层</span></div><input type="range" id="layer" min="0" max="3" value="0" aria-label="切层位置"></div><p class="fine" id="modeHint">手动从表面点击；零格连通区及周围数字自动全部揭开。</p></section>
+      <div class="legend"><span><i class="unknown"></i>未探索</span><span><i class="safe"></i>已翻开</span><span><i class="flag"></i>已标记</span></div>
+    </aside>
+    <div class="workspace">
+      <div class="stage-top"><div><span class="live-dot"></span><span id="status">等待第一次探索</span></div><span id="boardLabel">4³ / 64 CELLS</span></div>
+      <div id="viewport"><canvas id="scene" tabindex="0" aria-label="可拖动旋转的三维扫雷棋盘"></canvas><div class="stage-label"><span>3D FIELD</span><strong id="viewLabel">完整雷场</strong></div><div class="orientation-note">拖动旋转 · 滚轮缩放</div><button id="resetView" class="view-reset" title="恢复默认视角">↺ 归位</button><div id="endOverlay" class="end-overlay" hidden><div id="endTitle"></div><p id="endText"></p><button id="playAgain" class="primary">再来一局 ↻</button></div></div>
+      <div class="inspection"><div><span class="eyebrow">SELECTED CELL</span><strong id="coordinates">—</strong></div><div class="cell-details"><span id="cellState">选择一个单元</span><small id="neighborCount">数字统计当前规则下的相邻单元</small></div><button id="reveal" class="primary">翻开 <kbd>Space</kbd></button><button id="flag" class="secondary">标记 <kbd>F</kbd></button></div>
+      <div class="bottom-hint"><span><b>单击</b> 选择　 <b>双击</b> 翻开　 <b>右键</b> 标雷</span><span id="clueHoverHint">数字贴在半透明提示壳上；悬停聚焦，外壳不挡点击。</span></div>
+    </div>
+  </main>
+  <dialog id="helpDialog"><button id="closeHelp" class="quiet close">关闭 ×</button><div class="eyebrow">HOW TO PLAY</div><h2>从表面，一层层向内探索</h2><p>每个小单元是一格。三棱锥模式由小三棱锥填满大三棱锥，仅共面算相邻，每格最多 4 个邻居；立方体模式保留共面、共棱、共顶点均相邻的规则，最多 26 个邻居。三棱锥单元由规则网格分割而成，体积相等，形状不全相同。</p><p><b>拖动鼠标</b>旋转，<b>滚轮</b>缩放。<b>单击</b>选择，<b>双击或空格</b>翻开并消除，<b>右键或 F</b>标雷。</p><p><b>默认表面消除：</b>手动点击只能操作有一面暴露于外界的方块。点到零格后，与二维扫雷相同，整个连通的零格区域及其周围数字格会一次性自动揭开，包括内部格子。零格直接消失；非零格揭开后保留淡色半透明提示外壳，数字贴在朝向玩家的可见面上，旋转时自动换面。外壳不阻挡点击后面的方块，数字仍统计原始邻域中的雷。</p><p><b>数字悬停提示：</b>鼠标移到已揭开的数字上，当前提示壳突出显示，其相邻、尚未消除的块体会闪烁高亮，包括被遮住的邻居；其他数字与提示壳淡出，减少干扰。移开或开始拖动即恢复原样。数字会保持可读字号，重叠时优先显示当前关注及较近的提示。高亮只表示邻接关系，不显示隐藏雷的位置，也不会解锁内部操作。</p><p><b>邻域透视</b>仅用于观察，不会让未暴露的内部格可操作。切换到<b>自由探索</b>才可以使用切层，直接操作内部格。切换形状或模式会开始新一局。</p><p>消除全部安全格即可获胜；踩雷结束。首击安全，随机布局不保证无猜。尺寸和密度设置点击“生成新雷场”生效。</p></dialog>
+  <script src="core.js"></script><script src="app.js"></script>
+</body>
+</html>

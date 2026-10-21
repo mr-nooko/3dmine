@@ -1,0 +1,23 @@
+# Dependencies, temporary output and local preview logs
+node_modules/
+*.log
+.release-staging/
+releases/
+/preview*.png
+
+# Local settings and credentials
+.env
+.env.*
+*.pem
+*.key
+*.p12
+*.pfx
+.codex/
+.agents/
+.aws/
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
